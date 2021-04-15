@@ -65,8 +65,9 @@ Notice a directory called *install* containing a file named *f3_tree.sql*. This 
 // If you don't use composers autoloader feature, you need to include the F3_Tree class
 require 'path/to/f3_tree.php';
 
-// instantiate a new object
-$f3t = new F3_Tree();
+// Instantiate a new object of the class with an object of the Fat-Free Framework DB/SQL 
+// class as the parameter:
+$f3t = new F3_Tree($f3->get('DB'));
 
 // populate the table
 

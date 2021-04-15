@@ -81,25 +81,25 @@ class F3_Tree {
      *
      *  <code>
      *  // add a new topmost node
-     *  $node = $mptt->add(0, 'Main');
+     *  $node = $f3t->add(0, 'Main');
      *
      *  // add a child node
-     *  $mptt->add($node, 'Child 1');
+     *  $f3t->add($node, 'Child 1');
      *
      *  // add another child node
-     *  $mptt->add($node, 'Child 2');
+     *  $f3t->add($node, 'Child 2');
      *
      *  // insert a third child node
      *  // notice the "1" as the last argument, instructing the script to insert the child node
      *  // as the second child node, after "Child 1"
      *  // remember that the trees are 0-based, meaning that the first node in a tree has the index 0!
-     *  $mptt->add($node, 'Child 3', 1);
+     *  $f3t->add($node, 'Child 3', 1);
      *
      *  // and finally, insert a fourth child node
      *  // notice the "0" as the last argument, instructing the script to insert the child node
      *  // as the very first child node of the parent node
      *  // remember that the trees are 0-based, meaning that the first node in a tree has the index 0!
-     *  $mptt->add($node, 'Child 4', 0);
+     *  $f3t->add($node, 'Child 4', 0);
      *  </code>
      *
      *  @param  integer     $parent     The ID of the parent node.
@@ -278,16 +278,16 @@ class F3_Tree {
      *
      *  <code>
      *  // insert a topmost node
-     *  $node = $mptt->add(0, 'Main');
+     *  $node = $f3t->add(0, 'Main');
      *
      *  // add a child node
-     *  $child1 = $mptt->add($node, 'Child 1');
+     *  $child1 = $f3t->add($node, 'Child 1');
      *
      *  // add another child node
-     *  $child2 = $mptt->add($node, 'Child 2');
+     *  $child2 = $f3t->add($node, 'Child 2');
      *
      *  // create a copy of "Child 2" node and put it as "Child 1"'s child
-     *  $mptt->copy($child2, $child1);
+     *  $f3t->copy($child2, $child1);
      *  </code>
      *
      *  @param  integer     $source     The ID of a node to copy.
@@ -561,16 +561,16 @@ class F3_Tree {
      *
      *  <code>
      *  // add a topmost node
-     *  $node = $mptt->add(0, 'Main');
+     *  $node = $f3t->add(0, 'Main');
      *
      *  // add child node
-     *  $child1 = $mptt->add($node, 'Child 1');
+     *  $child1 = $f3t->add($node, 'Child 1');
      *
      *  // add another child node
-     *  $child2 = $mptt->add($node, 'Child 2');
+     *  $child2 = $f3t->add($node, 'Child 2');
      *
      *  // delete the "Child 2" node
-     *  $mptt->delete($child2);
+     *  $f3t->delete($child2);
      *  </code>
      *
      *  @param  integer     $node       The ID of the node to delete.
@@ -1001,25 +1001,25 @@ class F3_Tree {
      *
      *  <code>
      *  // insert a topmost node
-     *  $node = $mptt->add(0, 'Main');
+     *  $node = $f3t->add(0, 'Main');
      *
      *  // add a child node
-     *  $child1 = $mptt->add($node, 'Child 1');
+     *  $child1 = $f3t->add($node, 'Child 1');
      *
      *  // add another child node
-     *  $child2 = $mptt->add($node, 'Child 2');
+     *  $child2 = $f3t->add($node, 'Child 2');
      *
      *  // add another child node
-     *  $child3 = $mptt->add($node, 'Child 3');
+     *  $child3 = $f3t->add($node, 'Child 3');
      *
      *  // move "Child 2" node to be the first of "Main"'s children nodes
-     *  $mptt->move($child2, $node, 0);
+     *  $f3t->move($child2, $node, 0);
      *
      *  // move "Child 2" node into "Child 1"
-     *  $mptt->move($child2, $child1);
+     *  $f3t->move($child2, $child1);
      *
      *  // move "Child 1" after "Child 3"
-     *  $mptt->move($child1, $child3, 'after');
+     *  $f3t->move($child1, $child3, 'after');
      *  </code>
      *
      *  @param  integer     $source     The ID of a node to move
@@ -1327,10 +1327,10 @@ class F3_Tree {
      *
      *  <code>
      *  // add a topmost node
-     *  $node = $mptt->add(0, 'Main');
+     *  $node = $f3t->add(0, 'Main');
      *
      *  // change the node's title
-     *  $mptt->update($node, 'Primary');
+     *  $f3t->update($node, 'Primary');
      *  </code>
      *
      *  @param  integer     $node       The ID of a node to update the title for.
@@ -1384,7 +1384,7 @@ class F3_Tree {
      *  whatever given in the <i>$separator</i> argument, and ready to be used in a <select> element.
      *
      *  <code>
-     *  $selectables = $mptt->to_select($node_id);
+     *  $selectables = $f3t->to_select($node_id);
      *
      *  echo '<select name="myselect">';
      *
