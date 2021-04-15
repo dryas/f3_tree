@@ -1,19 +1,19 @@
 <?php
 
 /**
- *  A PHP library that provides an implementation of the modified preorder tree traversal algorithm making it easy to
- *  implement the MPTT algorithm in your PHP applications.
+ *  F3_Tree is a tree helper plugin for the Fat-Free Framework that provides an implementation of the modified preorder 
+ *  tree traversal algorithm making it easy to implement the MPTT algorithm in your applications.
  *
- *  Read more {@link https://github.com/stefangabos/Zebra_Mptt/ here}
+ *  Based on the {@link https://github.com/stefangabos/Zebra_Mptt/ Zebra_Mptt} by Stefan Gabos.
  *
- *  @author     Stefan Gabos <contact@stefangabos.ro>
- *  @version    2.3.7 (last revision: February 12, 2020)
+ *  @author     Benjamin Kaiser <benjamin@diekaisers.info>, Stefan Gabos <contact@stefangabos.ro>
+ *  @version    1.0.0 (last revision: April 15, 2021)
  *  @copyright  (c) 2009 - 2020 Stefan Gabos
  *  @license    http://www.gnu.org/licenses/lgpl-3.0.txt GNU LESSER GENERAL PUBLIC LICENSE
- *  @package    Zebra_Mptt
+ *  @package    F3_Tree
  */
 
-class Zebra_Mptt {
+class F3_Tree {
 
     /**
      *  Constructor of the class.
