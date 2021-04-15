@@ -1,8 +1,8 @@
 {
-    "name": "dryas/f3-tree",
+    "name": "dryas/f3_tree",
     "type": "library",
     "description": "A Tree helper for the PHP Fat-Free framework (F3) implementing the modified preorder tree traversal algorithm",
-    "keywords": ["f3-tree", "fat-free-plugin", "fat-free-framework", "f3", "php", "mptt", "modified", "preorder", "tree", "traversal"],
+    "keywords": ["f3_tree", "fat-free-plugin", "fat-free-framework", "f3", "php", "mptt", "modified", "preorder", "tree", "traversal"],
     "homepage": "https://github.com/dryas/f3-tree",
     "license": "LGPL-3.0",
     "authors": [
@@ -20,7 +20,8 @@
         }
     ],
     "require": {
-        "php": ">=5.0.0"
+        "php": ">=5.0.0",
+        "bcosca/fatfree-core": "^3.6"
     },
     "autoload": {
         "classmap": [
