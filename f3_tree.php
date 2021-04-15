@@ -19,27 +19,24 @@ class F3_Tree {
      *  Constructor of the class.
      *
      *  <i>Make sure that before you instantiate the class you import or execute the SQL code found in the in the
-     *  "install/mptt.sql" file, using the command line or your preferred MySQL manager.</i>
+     *  "install/f3_tree.sql" file, using the command line or your preferred MySQL manager.</i>
      *
      *  <code>
-     *  // include the php file
-     *  require 'path/to/Zebra_Mptt.php';
+     *  // If you don't use composers autoloader feature, you need to include the F3_Tree class
+     *  require 'path/to/f3_tree.php';
      *
      *  // instantiate the class
-     *  $mptt = new Zebra_Mptt($db_link);
+     *  $f3t = new F3_Tree($f3->get('DB'));
      *  </code>
      *
-     *  @param  resource    &$link          An object representing the connection to a MySQL Server, as returned by
-     *                                      {@link http://www.php.net/manual/en/mysqli.construct.php mysqli_connect}.
+     *  @param  resource    &$f3_db_obj     An object representing the database connection of the Fat-Free Framework DB/SQL class. E.g.: 
      *
-     *                                      If you use {@link http://stefangabos.ro/php-libraries/zebra-database/ Zebra_Database}
-     *                                      to connect to the database, you can get the connection to the MySQL server
-     *                                      via Zebra_Database's {@link http://stefangabos.ro/wp-content/docs/Zebra_Database/Zebra_Database/Zebra_Database.html#methodget_link get_link}
-     *                                      method.
+     *                                      $f3->set('DB', new DB\SQL('CONNECTION STRING'));
+     *                                      $f3t = new F3_Tree($f3->get('DB'));
      *
      *  @param  string      $table_name     (Optional) MySQL table name to be used for storing items.
      *
-     *                                      Default is <i>mptt</i>
+     *                                      Default is <i>f3tree</i>
      *
      *  @param  string      $id_column      (Optional) Name of the column that uniquely identifies items in the table
      *
@@ -51,48 +48,32 @@ class F3_Tree {
      *
      *  @param  string      $left_column    (Optional) Name of the column that stores "left" values
      *
-     *                                      Default is <i>lft</i> ("left" is a reserved word in MySQL)
+     *                                      Default is <i>lft_id</i> ("left" is a reserved word in MySQL)
      *
      *  @param  string      $right_column   (Optional) Name of the column that stores "right" values
      *
-     *                                      Default is <i>rgt</i> ("right" is a reserved word in MySQL)
+     *                                      Default is <i>rgt_id</i> ("right" is a reserved word in MySQL)
      *
      *  @param  string      $parent_column  (Optional) Name of the column that stores the IDs of parent items
      *
-     *                                      Default is <i>parent</i>
+     *                                      Default is <i>parent_id</i>
      *
      *  @return void
      */
-    public function __construct(&$link, $table_name = 'mptt', $id_column = 'id', $title_column = 'title', $left_column = 'lft', $right_column = 'rgt', $parent_column = 'parent') {
-
-        // stop if required PHP version is not available
-        if (version_compare(phpversion(), '5.0.0') < 0) trigger_error('PHP 5.0.0 or greater required', E_USER_ERROR);
-
-        // stop if the mysqli extension is not loaded
-        if (!extension_loaded('mysqli')) trigger_error('mysqli extension is required', E_USER_ERROR);
+    public function __construct(&$f3_db_obj, $table_name = 'f3tree', $id_column = 'id', $title_column = 'title', $left_column = 'lft_id', $right_column = 'rgt_id', $parent_column = 'parent_id') {
 
         // store the connection link
-        $this->link = $link;
+        $this->link = $f3_db_obj->pdo();
 
-        // continue only if there is an active MySQL connection
-        if (@mysqli_ping($this->link))
-
-            // initialize properties
-            $this->properties = array(
-
-                'table_name'    =>  $table_name,
-                'id_column'     =>  $id_column,
-                'title_column'  =>  $title_column,
-                'left_column'   =>  $left_column,
-                'right_column'  =>  $right_column,
-                'parent_column' =>  $parent_column,
-
-            );
-
-        // if no MySQL connections could be found
-        // trigger a fatal error message and stop execution
-        else trigger_error('no MySQL connection', E_USER_ERROR);
-
+        // initialize properties
+        $this->properties = array(
+            'table_name'    =>  $table_name,
+            'id_column'     =>  $id_column,
+            'title_column'  =>  $title_column,
+            'left_column'   =>  $left_column,
+            'right_column'  =>  $right_column,
+            'parent_column' =>  $parent_column,
+        );
     }
 
     /**
@@ -219,10 +200,10 @@ class F3_Tree {
             }
 
             // lock table to prevent other sessions from modifying the data and thus preserving data integrity
-            mysqli_query($this->link, 'LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // update the nodes in the database having their "left"/"right" values outside the boundary
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -231,9 +212,9 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` > ' . $boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -242,10 +223,10 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['right_column'] . '` > ' . $boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // insert the new node into the database
-            mysqli_query($this->link, '
+            $stmt = $this->link->prepare('
                 INSERT INTO
                     `' . $this->properties['table_name'] . '`
                     (
@@ -256,18 +237,19 @@ class F3_Tree {
                     )
                 VALUES
                     (
-                        "' . mysqli_real_escape_string($this->link, $title) . '",
+                        ?,
                         ' . ($boundary + 1) . ',
                         ' . ($boundary + 2) . ',
                         ' . $parent . '
                     )
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ');
+            $stmt->execute(array($title)) or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // get the ID of the newly inserted node
-            $node_id = mysqli_insert_id($this->link);
+            $node_id = $this->link->lastInsertId();
 
             // release table lock
-            mysqli_query($this->link, 'UNLOCK TABLES') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('UNLOCK TABLES') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // add the node to the lookup array
             $this->lookup[$node_id] = array(
@@ -441,10 +423,10 @@ class F3_Tree {
             }
 
             // lock table to prevent other sessions from modifying the data and thus preserving data integrity
-            mysqli_query($this->link, 'LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // update the nodes in the database having their "left"/"right" values outside the boundary
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -453,9 +435,9 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` > ' . $target_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -464,7 +446,7 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['right_column'] . '` > ' . $target_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // finally, the nodes that are to be inserted need to have their "left" and "right" values updated
             $shift = $target_boundary - $source_boundary + 1;
@@ -479,7 +461,7 @@ class F3_Tree {
                 $properties[$this->properties['right_column']] += $shift;
 
                 // insert into the database
-                mysqli_query($this->link, '
+                $stmt = $this->link->prepare('
                     INSERT INTO
                         `' . $this->properties['table_name'] . '`
                         (
@@ -490,15 +472,16 @@ class F3_Tree {
                         )
                     VALUES
                         (
-                            "' . mysqli_real_escape_string($this->link, $properties[$this->properties['title_column']]) . '",
+                            ?,
                             ' . $properties[$this->properties['left_column']] . ',
                             ' . $properties[$this->properties['right_column']] . ',
                             ' . $properties[$this->properties['parent_column']] . '
                         )
-                ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+                ');
+                $this->link->execute(array($properties[$this->properties['title_column']])) or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
                 // get the ID of the newly inserted node
-                $node_id = mysqli_insert_id($this->link);
+                $node_id = $this->link->lastInsertId();
 
                 // because the node may have children nodes and its ID just changed
                 // we need to find its children and update the reference to the parent ID
@@ -523,7 +506,7 @@ class F3_Tree {
             unset($properties);
 
             // release table lock
-            mysqli_query($this->link, 'UNLOCK TABLES') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('UNLOCK TABLES') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // at this point, we have the nodes in the database but we need to also update the lookup array
 
@@ -612,10 +595,10 @@ class F3_Tree {
                 unset($this->lookup[$descendant[$this->properties['id_column']]]);
 
             // lock table to prevent other sessions from modifying the data and thus preserving data integrity
-            mysqli_query($this->link, 'LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // also remove nodes from the database
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 DELETE
                 FROM
@@ -624,7 +607,7 @@ class F3_Tree {
                     `' . $this->properties['left_column'] . '` >= ' . $this->lookup[$node][$this->properties['left_column']] . ' AND
                     `' . $this->properties['right_column'] . '` <= ' . $this->lookup[$node][$this->properties['right_column']] . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // the value with which items outside the boundary set below, are to be updated with
             $target_rl_difference =
@@ -660,7 +643,7 @@ class F3_Tree {
             }
 
             // update the nodes in the database having their "left"/"right" values outside the boundary
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -669,9 +652,9 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` > ' . $boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -680,10 +663,10 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['right_column'] . '` > ' . $boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // release table lock
-            mysqli_query($this->link, 'UNLOCK TABLES') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('UNLOCK TABLES') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // return true as everything went well
             return true;
@@ -1137,11 +1120,11 @@ class F3_Tree {
             $source_boundary = $this->lookup[$source][$this->properties['left_column']];
 
             // lock table to prevent other sessions from modifying the data and thus preserving data integrity
-            mysqli_query($this->link, 'LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // we'll multiply the "left" and "right" values of the nodes we're about to move with "-1", in order to
             // prevent the values being changed further in the script
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1152,7 +1135,7 @@ class F3_Tree {
                     `' . $this->properties['left_column'] . '` >= ' . $this->lookup[$source][$this->properties['left_column']] . ' AND
                     `' . $this->properties['right_column'] . '` <= ' . $this->lookup[$source][$this->properties['right_column']] . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // remove the source node from the list
             unset($this->lookup[$source]);
@@ -1175,7 +1158,7 @@ class F3_Tree {
             }
 
             // update the nodes in the database having their "left"/"right" values outside the boundary
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1184,9 +1167,9 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` > ' . $source_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1195,7 +1178,7 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['right_column'] . '` > ' . $source_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // get descendant nodes of target node (first level only)
             $target_descendants = $this->get_descendants((int)$target);
@@ -1260,7 +1243,7 @@ class F3_Tree {
             }
 
             // update the nodes in the database having their "left"/"right" values outside the boundary
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1269,9 +1252,9 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` > ' . $target_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1280,7 +1263,7 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['right_column'] . '` > ' . $target_boundary . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // finally, the nodes that are to be inserted need to have their "left" and "right" values updated
             $shift = $target_boundary - $source_boundary + 1;
@@ -1302,7 +1285,7 @@ class F3_Tree {
             // also update the entries in the database
             // (notice that we're subtracting rather than adding and that finally we multiply by -1 so that the values
             // turn positive again)
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1312,10 +1295,10 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['left_column'] . '` < 0
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // finally, update the parent of the source node
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1324,10 +1307,10 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['id_column'] . '` = ' . $source . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // release table lock
-            mysqli_query($this->link, 'UNLOCK TABLES') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('UNLOCK TABLES') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // reorder the lookup array
             $this->_reorder_lookup_array();
@@ -1370,10 +1353,10 @@ class F3_Tree {
         if (isset($this->lookup[$node])) {
 
             // lock table to prevent other sessions from modifying the data and thus preserving data integrity
-            mysqli_query($this->link, 'LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('LOCK TABLE `' . $this->properties['table_name'] . '` WRITE') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // update node's title
-            mysqli_query($this->link, '
+            $this->link->query('
 
                 UPDATE
                     `' . $this->properties['table_name'] . '`
@@ -1382,10 +1365,10 @@ class F3_Tree {
                 WHERE
                     `' . $this->properties['id_column'] . '` = ' . $node . '
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // release table lock
-            mysqli_query($this->link, 'UNLOCK TABLES') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            $this->link->query('UNLOCK TABLES') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             // update lookup array
             $this->lookup[$node][$this->properties['title_column']] = $title;
@@ -1578,7 +1561,7 @@ class F3_Tree {
         if (!isset($this->lookup)) {
 
             // fetch data from the database
-            $result = mysqli_query($this->link, '
+            $result = $this->link->query('
 
                 SELECT
                     *
@@ -1587,12 +1570,12 @@ class F3_Tree {
                 ORDER BY
                     `' . $this->properties['left_column'] . '`
 
-            ') or trigger_error(mysqli_error($this->link), E_USER_ERROR);
+            ') or trigger_error($this->link->errorInfo(), E_USER_ERROR);
 
             $this->lookup = array();
 
             // iterate through the found records
-            while ($row = mysqli_fetch_assoc($result))
+            while ($row = $result->fetch(PDO::FETCH_ASSOC))
 
                 // put all records in an array; use the ID column as index
                 $this->lookup[$row[$this->properties['id_column']]] = $row;
