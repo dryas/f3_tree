@@ -24,8 +24,6 @@
         "bcosca/fatfree-core": "^3.6"
     },
     "autoload": {
-        "classmap": [
-            "f3tree.php"
-        ]
+        "classmap": ["."]
     }
 }
