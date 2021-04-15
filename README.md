@@ -2,6 +2,8 @@
 
 *A Tree helper for the PHP Fat-Free framework (F3) implementing the modified preorder tree traversal algorithm*
 
+[![Latest Stable Version](https://poser.pugx.org/dryas/f3-tree/v/stable)](https://packagist.org/packages/dryas/f3-tree) [![Total Downloads](https://poser.pugx.org/dryas/f3-tree/downloads)](https://packagist.org/packages/dryas/f3-tree) [![License](https://poser.pugx.org/dryas/f3-tree/license)](https://packagist.org/packages/dryas/f3-tree)
+
 ## What is Modified Preorder Tree Traversal
 
 MPTT is a fast algorithm for storing hierarchical data (like categories and their subcategories) in a relational database. This is a problem that most of us have had to deal with, and for which we've used an [adjacency list](http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/), where each item in the table contains a pointer to its parent and where performance will naturally degrade with each level added as more queries need to be run in order to fetch a subtree of records.
