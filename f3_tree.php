@@ -29,12 +29,12 @@ class F3_Tree {
      *  $f3t = new F3_Tree($f3->get('DB'));
      *  </code>
      *
-     *  @param  resource    &$f3_db_obj     An object representing the database connection of the Fat-Free Framework DB/SQL class. E.g.: 
+     *  @param  resource    &$f3_db_obj     An object of the Fat-Free Framework DB/SQL class representing the database connection. E.g.: 
      *
      *                                      $f3->set('DB', new DB\SQL('CONNECTION STRING'));
      *                                      $f3t = new F3_Tree($f3->get('DB'));
      *
-     *  @param  string      $table_name     (Optional) MySQL table name to be used for storing items.
+     *  @param  string      $table_name     (Optional) Database table name to be used for storing items.
      *
      *                                      Default is <i>f3tree</i>
      *
@@ -804,7 +804,6 @@ class F3_Tree {
      *                                      <i>Since this method may return both "0" and FALSE, make sure you use === to
      *                                      verify the returned result!</i>
      *
-     *  @since  2.2.6
      */
     public function get_next_sibling($node) {
 
@@ -907,7 +906,6 @@ class F3_Tree {
      *                                      <i>Since this method may return both "0" and FALSE, make sure you use === to
      *                                      verify the returned result!</i>
      *
-     *  @since  2.2.6
      */
     public function get_previous_sibling($node) {
 
@@ -942,7 +940,6 @@ class F3_Tree {
      *  @return mixed                       Returns an array with a node's sibling nodes, an empty array if the node has
      *                                      no siblings, or FALSE on error (if the node doesn't exist)
      *
-     *  @since  2.2.6
      */
     public function get_siblings($node, $include_self = false) {
 
@@ -1342,7 +1339,6 @@ class F3_Tree {
      *
      *  @return boolean                 TRUE on success or FALSE on error.
      *
-     *  @since  2.2.5
      */
     public function update($node, $title) {
 
@@ -1491,18 +1487,18 @@ class F3_Tree {
     /**
      *  Transforms a node and it's subnodes to an ordered/unordered list.
      *
-     *  The list items will have the class attribute set to "zebra_mptt_item zebra_mptt_item_xx" where "xx" is the ID
+     *  The list items will have the class attribute set to "f3_tree_item f3_tree_item_xx" where "xx" is the ID
      *  of the respective node.
      *
      *  <i>You can further customize the output with regular expressions to suit your needs</i>
      *
      *  <code>
      *  // instantiate the class
-     *  $mptt = new Zebra_Mptt();
+     *  $f3t = new F3_Tree($f3->get('DB'));
      *
      *  // make a list out of all nodes as an ordered list and with the
      *  // main list having the class "mylist"
-     *  echo $mptt->to_list(0, 'ol', 'class="mylist"');
+     *  echo $f3t->to_list(0, 'ol', 'class="mylist"');
      *  </code>
      *
      *  @param  integer     $node           The ID of a node.
@@ -1518,7 +1514,6 @@ class F3_Tree {
      *
      *  @return string
      *
-     *  @since  2.2.3
      */
     public function to_list($node, $list_type = 'ul', $attributes = '') {
 
@@ -1536,7 +1531,7 @@ class F3_Tree {
             foreach ($node as $elem)
 
                 // generate output and if the node has children nodes, call this method recursively
-                $out .= '<li class="zebra_mptt_item zebra_mptt_item_' . $elem[$this->properties['id_column']] . '">' .
+                $out .= '<li class="f3_tree_item f3_tree_item_' . $elem[$this->properties['id_column']] . '">' .
                     $elem[$this->properties['title_column']] . (is_array($elem['children']) ? $this->to_list($elem['children'], $list_type) : '') .
                 '</li>';
 
