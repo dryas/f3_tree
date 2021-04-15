@@ -99,3 +99,8 @@ $f3t->get_children($meat);
 // get a multidimensional array (a tree) of all the data in the database
 $f3t->get_tree();
 ```
+## Documentation
+
+You can find more detailed information in the F3_Tree wiki:
+
+[Documentation](https://github.com/dryas/f3_tree/wiki)
