@@ -2,7 +2,7 @@
 
 *A Tree helper for the PHP Fat-Free framework (F3) implementing the modified preorder tree traversal algorithm*
 
-[![Latest Stable Version](https://poser.pugx.org/dryas/f3-tree/v/stable)](https://packagist.org/packages/dryas/f3-tree) [![Total Downloads](https://poser.pugx.org/dryas/f3-tree/downloads)](https://packagist.org/packages/dryas/f3-tree) [![License](https://poser.pugx.org/dryas/f3-tree/license)](https://packagist.org/packages/dryas/f3-tree)
+[![Latest Stable Version](https://poser.pugx.org/dryas/f3_tree/v/stable)](https://packagist.org/packages/dryas/f3_tree) [![Total Downloads](https://poser.pugx.org/dryas/f3_tree/downloads)](https://packagist.org/packages/dryas/f3_tree) [![License](https://poser.pugx.org/dryas/f3_tree/license)](https://packagist.org/packages/dryas/f3_tree)
 
 ## What is Modified Preorder Tree Traversal
 
