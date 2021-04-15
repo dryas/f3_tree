@@ -1,6 +1,6 @@
 # F3_Tree
 
-*A Tree helper for the PHP Fat-Free framework (F3) implements the modified preorder tree traversal algorithm*
+*A Tree helper for the PHP Fat-Free framework (F3) implementing the modified preorder tree traversal algorithm*
 
 ## What is Modified Preorder Tree Traversal
 
@@ -12,15 +12,15 @@ The tradeoff for this efficiency is that updating, deleting and inserting record
 
 For more information about the modified preorder tree traversal method, read this excellent article called [Storing Hierarchical Data in a Database](http://blogs.sitepoint.com/hierarchical-data-database-2/).
 
-## What is F3-Tree
+## What is F3_Tree
 
 **F3\_Tree** is a tree helper plugin for the [Fat-Free Framework](http://github.com/bcosca/fatfree) that provides an implementation of the modified preorder tree traversal algorithm making it easy to implement the MPTT algorithm in your applications.
 
 It provides methods for adding nodes anywhere in the tree, deleting nodes, moving and copying nodes around the tree and methods for retrieving various information about the nodes.
 
-F3\_Tree is based on the fantastic [Zebra_Mptt](https://github.com/stefangabos/Zebra_Mptt) library by [Stefan Gabos](https://github.com/stefangabos) and uses [table locks](http://dev.mysql.com/doc/refman/5.0/en/lock-tables.html) making sure that database integrity is always preserved and that concurrent MySQL sessions don't compromise data integrity. Also, F3-Tree uses a caching mechanism which has as result the fact that regardless of the type, or the number of retrieval operations, **the database is read only once per script execution!**
+F3\_Tree is based on the fantastic [Zebra_Mptt](https://github.com/stefangabos/Zebra_Mptt) library by [Stefan Gabos](https://github.com/stefangabos) and uses [table locks](http://dev.mysql.com/doc/refman/5.0/en/lock-tables.html) making sure that database integrity is always preserved and that concurrent MySQL sessions don't compromise data integrity. Also, F3_Tree uses a caching mechanism which has as result the fact that regardless of the type, or the number of retrieval operations, **the database is read only once per script execution!**
 
-Instead of using the Mysqli extension for database access like the original Zebra_Mptt library is using, the F3-Tree library uses the PDO extension like it is used in the Fat-Free Framework.
+Instead of using the Mysqli extension for database access like the original Zebra_Mptt library is using, the F3_Tree library uses the PDO extension like it is used in the Fat-Free Framework.
 
 ## Features
 
@@ -33,7 +33,7 @@ Instead of using the Mysqli extension for database access like the original Zebr
 
 PHP 5.0.0+, MySQL 4.1.22+, Fat-Free Framework 3.7.3+
 
-Attention: As PDO offers connectors to different database systems, it is likely that the library also works with other database systems. Currently I'm only working with MySQL, so I don't know about the compatibility or possible issues. I'm always glad if you want to offer your support on making the library more compatible with different database systems by doing a pull request with your changes. Thanks!
+Attention: As PDO offers connectors to different database systems, it is likely that the library also works with other database systems than MySQL (which I'm mostly using). I'm always glad if you want to offer your support on making the library more compatible with different database systems by doing a pull request with your changes. Thanks!
 
 ## Installation
 
